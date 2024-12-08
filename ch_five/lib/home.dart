@@ -10,7 +10,7 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
   static List<Widget> pages = <Widget>[
     ExploreScreen(),
