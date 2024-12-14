@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ch_five/models/models.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class GroceryItemScreen extends StatefulWidget {
   const GroceryItemScreen({
@@ -39,12 +40,15 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
       _importance = originalItem.importance;
       _currentColor = originalItem.color;
       final date = originalItem.date;
-      _timeOfDay = TimeOfDay(hour: date.hour, minute: date.minute,);
+      _timeOfDay = TimeOfDay(
+        hour: date.hour,
+        minute: date.minute,
+      );
       _dueDate = date;
     }
     _nameController.addListener(() {
       setState(() {
-       _name = _nameController.text; 
+        _name = _nameController.text;
       });
     });
   }
@@ -54,8 +58,59 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
     _nameController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.orange,);
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.check),
+          ),
+        ],
+        elevation: 0.0,
+        title: Text(
+          "Grocery Item",
+          style: GoogleFonts.lato(fontWeight: FontWeight.w600),
+        ),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            buildNameField(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildNameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Item name',
+          style: GoogleFonts.lato(fontSize: 28.0),
+        ),
+        TextField(
+          controller: _nameController,
+          cursorColor: _currentColor,
+          decoration: InputDecoration(
+            hintText: 'E.g. Apples, Banana',
+            enabledBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.white),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: _currentColor),
+            ),
+            border: UnderlineInputBorder(
+              borderSide: BorderSide(color: _currentColor),
+            ),
+          ),
+        )
+      ],
+    );
   }
 }
