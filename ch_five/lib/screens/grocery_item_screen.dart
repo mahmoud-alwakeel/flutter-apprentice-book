@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ch_five/models/models.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class GroceryItemScreen extends StatefulWidget {
   const GroceryItemScreen({
@@ -80,6 +82,16 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
         child: ListView(
           children: [
             buildNameField(),
+            // SizedBox(
+            //   height: 12,
+            // ),
+            buildImportanceField(),
+            buildDateField(context),
+            buildTimeField(context),
+            const SizedBox(
+              height: 12,
+            ),
+            buildColorPicker(context),
           ],
         ),
       ),
@@ -110,6 +122,156 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
             ),
           ),
         )
+      ],
+    );
+  }
+
+  Widget buildImportanceField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("IMOPRTANCE"),
+        Wrap(
+          spacing: 10,
+          children: [
+            ChoiceChip(
+              label: Text('Low'),
+              selected: _importance == Importance.low,
+              onSelected: (selected) {
+                setState(() {
+                  _importance = Importance.low;
+                });
+              },
+            ),
+            ChoiceChip(
+              label: Text('medium'),
+              selected: _importance == Importance.medium,
+              onSelected: (selected) {
+                setState(() {
+                  _importance = Importance.medium;
+                });
+              },
+            ),
+            ChoiceChip(
+              label: Text('high'),
+              selected: _importance == Importance.high,
+              onSelected: (selected) {
+                setState(() {
+                  _importance = Importance.high;
+                });
+              },
+            ),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget buildDateField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Date"),
+            TextButton(
+              onPressed: () async {
+                final currentDate = DateTime.now();
+                final selectedDate = await showDatePicker(
+                  context: context,
+                  firstDate: currentDate,
+                  lastDate: DateTime(currentDate.year + 5),
+                  initialDate: currentDate,
+                );
+                setState(() {
+                  if (selectedDate != null) {
+                    _dueDate = selectedDate;
+                  }
+                });
+              },
+              child: Text("select"),
+            )
+          ],
+        ),
+        Text(DateFormat('yyyy-MM-dd').format(_dueDate)),
+      ],
+    );
+  }
+
+  Widget buildTimeField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Time of Day"),
+            TextButton(
+              onPressed: () async {
+                final timeOfDay = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                );
+                setState(() {
+                  if (timeOfDay != null) {
+                    _timeOfDay = timeOfDay;
+                  }
+                });
+              },
+              child: Text("select"),
+            )
+          ],
+        ),
+        Text(_timeOfDay.format(context)),
+      ],
+    );
+  }
+
+  Widget buildColorPicker(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Container(
+              height: 50,
+              width: 10,
+              color: _currentColor,
+            ),
+            SizedBox(
+              width: 8,
+            ),
+            Text('Color')
+          ],
+        ),
+        TextButton(
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    content: BlockPicker(
+                      pickerColor: Colors.white,
+                      onColorChanged: (color) {
+                        setState(() {
+                          _currentColor = color;
+                        });
+                      },
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Save'),
+                      ),
+                    ],
+                  );
+                });
+          },
+          child: Text('Select'),
+        ),
       ],
     );
   }
