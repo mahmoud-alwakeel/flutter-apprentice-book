@@ -1,8 +1,10 @@
+import 'package:ch_five/components/grocery_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:ch_five/models/models.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class GroceryItemScreen extends StatefulWidget {
   const GroceryItemScreen({
@@ -67,7 +69,27 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              final groceryItem = GroceryItem(
+                id: widget.originalItem?.id ?? const Uuid().v1(),
+                name: _nameController.text,
+                importance: _importance,
+                color: _currentColor,
+                quantity: _currentSliderValue,
+                date: DateTime(
+                  _dueDate.year,
+                  _dueDate.month,
+                  _dueDate.day,
+                  _timeOfDay.hour,
+                  _timeOfDay.minute,
+                ),
+              );
+              if (widget.isUpdating) {
+                widget.onUpdate(groceryItem);
+              } else {
+                widget.onCreate(groceryItem);
+              }
+            },
             icon: Icon(Icons.check),
           ),
         ],
@@ -88,10 +110,26 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
             buildImportanceField(),
             buildDateField(context),
             buildTimeField(context),
-            const SizedBox(
-              height: 12,
-            ),
+            const SizedBox(height: 12),
             buildColorPicker(context),
+            const SizedBox(height: 12),
+            buildQuantityField(),
+            GroceryTile(
+              item: GroceryItem(
+                id: 'Preview',
+                name: _name,
+                importance: _importance,
+                color: _currentColor,
+                quantity: _currentSliderValue,
+                date: DateTime(
+                  _dueDate.year,
+                  _dueDate.month,
+                  _dueDate.day,
+                  _timeOfDay.hour,
+                  _timeOfDay.minute,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -239,10 +277,10 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
               width: 10,
               color: _currentColor,
             ),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
-            Text('Color')
+            const Text('Color')
           ],
         ),
         TextButton(
@@ -271,6 +309,41 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
                 });
           },
           child: Text('Select'),
+        ),
+      ],
+    );
+  }
+
+  Widget buildQuantityField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          textBaseline: TextBaseline.alphabetic,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          children: [
+            Text("Quantity"),
+            SizedBox(
+              width: 16,
+            ),
+            Text(
+              _currentSliderValue.toInt().toString(),
+            ),
+          ],
+        ),
+        Slider(
+          inactiveColor: _currentColor.withOpacity(0.5),
+          activeColor: _currentColor,
+          value: _currentSliderValue.toDouble(),
+          min: 0,
+          max: 100,
+          divisions: 100,
+          label: _currentSliderValue.toInt().toString(),
+          onChanged: (value) {
+            setState(() {
+              _currentSliderValue = value.toInt();
+            });
+          },
         ),
       ],
     );
